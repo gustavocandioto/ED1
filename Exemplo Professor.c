@@ -2,49 +2,22 @@
 #include <stdlib.h>
 
 typedef struct{
-        int codigo;
         char descricao[50];
+        int codigo;
         double preco;
         int quantidade;
-        int IDCategoria;
                 
 } Produto;
+
 
 typedef struct categoria{
         int ID;
         char nome[50];
-        int totalProd;       
+        int totalProd;
+        Produto *listProd;
+        struct categoria *proximo;        
         
-} Categoria;
-
-typedef struct{
-        char rua[50];        
-        int numero;
-        char bairro[50];
-        char cidade[30];
-        char siglaEstado[3];
-        long int CEP;
-		                
-} Endereco;
-
-typedef struct{
-        long int cpf;
-        char nome[50];
-        int telefone;
-        Endereco endereco;
-		                
-} Funcionario;
-
-typedef struct{
-        int ID;
-        long int cpf;
-        double valor;
-        int IDProduto;
-		                
-} Compra;
-
-//CADASTRO
-void cadFuncionario(Funcionario *func);
+}Categoria;
 
 //Funções de Categoria
 void inicia(Categoria *listCat);
@@ -59,7 +32,7 @@ void cadListProdutoCat(Categoria *list);
 Categoria *buscaCatID(Categoria *list,int id);
 void mostraCatID(Categoria *list);
 
-//Funções de Produto
+//Funções de Poduto
 Produto *totalProdutos(int *quant);
 void cadListProduto(Produto *list, int quant);
 void cadProduto(Produto *prod);
@@ -129,52 +102,6 @@ int main(void){
     return EXIT_SUCCESS;    
 }
 
-//CADASTRO
-void cadFuncionario(Funcionario *func);
-{
-//	     if(!func){
-//	        printf("Voce deve informar primeiramente a quantidade de Produtos cadastrados!\n");
-//	        //Provocando uma saída do sistema caso a memória que precisemos não seja alocada.
-//	        return;
-//	     }
-		do{
-             printf("Digite o CPF: ");
-             scanf("%d", &func->CPF);
-
-             if(strlen(func->CPF) < 11){
-                    printf("CPF precisa conter 11 digitos.\n");               
-             }
-        } while(strlen(func->CPF) < 11);
-		
-		do{
-             printf("\nDigite o nome: ");
-             fflush(stdin);
-             gets(func->nome);
-             
-             if(func->nome == NULL || strcmp(func->nome,"")==0 || strcmp(func->nome," ")==0){
-                printf("Nome nao pode ser vazio.\n");                  
-             }
-         } while(func->nome == NULL || strcmp(func->nome,"")==0 || strcmp(func->nome," ")==0);
-           
-         do{  
-             printf("\nDigite o telefone: ");
-             scanf("%d", &func->telefone);
-             
-             if(strlen(&func->CPF) < 11){
-                    printf("CPF precisa conter 11 digitos.\n");               
-             }
-        } while(strlen(&func->CPF) < 11);    
-         
-         do{    
-             printf("\nDigite a quantidade do Produto em estoque: ");
-             scanf("%d", &prod->quantidade);  
-             
-             if(prod->quantidade < 0){
-                            printf("Digite uma quantidade positiva ou zero.\n");               
-             }
-         } while(prod->quantidade < 0);
-         printf("\n");
-}
 
 //Funções de Categoria
 void inicia(Categoria *listCat)
