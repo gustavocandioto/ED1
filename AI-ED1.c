@@ -8,7 +8,6 @@ typedef struct{
         double preco;
         int quantidade;
         int IDCategoria;
-                
 } Produto;
 
 typedef struct {
@@ -25,8 +24,7 @@ typedef struct{
         char bairro[50];
         char cidade[30];
         char siglaEstado[3];
-        long int CEP;
-		                
+        char CEP[11];
 } Endereco;
 
 typedef struct{
@@ -43,7 +41,6 @@ typedef struct{
         long int CPF;
         double valor;
         int IDProduto;
-				                
 } Venda;
 
 void inicia(Funcionario *listFunc, Categoria *listCat, Produto *listProd);
@@ -58,7 +55,7 @@ int main(void){
     Produto *listProd = (Produto *) malloc(sizeof(Produto));
     if(!listFunc || !listCat || !listProd) {
 		printf("Sem memoria disponivel!\n");
-		//Provocando uma saída do sistema caso a memória que precisemos não seja alocada.
+		//Provocando uma saÃ­da do sistema caso a memÃ³ria que precisemos nÃ£o seja alocada.
 		exit(1);
     }
     
@@ -83,7 +80,7 @@ int main(void){
         printf("14) Buscar produtos e total venda por funcionario.\n");
         printf("15) Funcionario com maior valor de venda.\n"); 
         printf("16) Categoria com mais venda.\n"); 
-        printf("17) Média das vendas.\n"); 
+        printf("17) MÃ©dia das vendas.\n"); 
         printf("0) Sair do programa.\n");   
         printf(" >"); 
         scanf("%d", &opcao);
@@ -149,7 +146,7 @@ void inicia(Funcionario *listFunc, Categoria *listCat, Produto *listProd) {
 void cadFuncionario(Funcionario *func, Endereco *end){
 	if(!func){
 		printf("Voce deve informar primeiramente a quantidade de Funcionarios cadastrados!\n");
-		//Provocando uma saída do sistema caso a memória que precisemos não seja alocada.
+		//Provocando uma saÃ­da do sistema caso a memÃ³ria que precisemos nÃ£o seja alocada.
 		return;
 	}
 
@@ -192,7 +189,7 @@ void cadFuncionario(Funcionario *func, Endereco *end){
 			printf("Nome da rua nao pode ser vazio.\n");                  
 		}
 		if(strlen(end->rua) > 50){
-			printf("Máximo de 20 caracteres.\n");
+			printf("MÃ¡ximo de 20 caracteres.\n");
 		}
 	} while(end->rua == NULL || strcmp(end->rua,"")==0 || strcmp(end->rua," ")==0 || strlen(end->rua) > 50);
 	
@@ -201,7 +198,7 @@ void cadFuncionario(Funcionario *func, Endereco *end){
 		scanf("%d", &end->numero);
 		
 		if(end->numero < 1){
-			printf("O número precisa ser maior que 0.\n");               
+			printf("O nÃºmero precisa ser maior que 0.\n");               
 		}
 	} while(end->numero < 1);
 	
@@ -214,7 +211,7 @@ void cadFuncionario(Funcionario *func, Endereco *end){
 			printf("Nome do bairro nao pode ser vazio.\n");                  
 		}
 		if(strlen(end->bairro) > 20){
-			printf("Máximo de 20 caracteres.\n");
+			printf("MÃ¡ximo de 20 caracteres.\n");
 		}
 	} while(end->bairro == NULL || strcmp(end->bairro,"")==0 || strcmp(end->bairro," ")==0 || strlen(end->bairro) > 20);
 	
@@ -227,7 +224,7 @@ void cadFuncionario(Funcionario *func, Endereco *end){
 			printf("Nome da cidade nao pode ser vazio.\n");                  
 		}
 		if(strlen(end->cidade) > 30){
-			printf("Máximo de 30 caracteres.\n");
+			printf("MÃ¡ximo de 30 caracteres.\n");
 		}
 	} while(end->cidade == NULL || strcmp(end->cidade,"")==0 || strcmp(end->cidade," ")==0 || strlen(end->cidade) > 30);
 	
@@ -240,16 +237,17 @@ void cadFuncionario(Funcionario *func, Endereco *end){
 			printf("Sigla nao pode ser vazia.\n");                  
 		}
 		if(strlen(end->siglaEstado) > 3){
-			printf("Máximo de 3 caracteres.\n");
+			printf("MÃ¡ximo de 3 caracteres.\n");
 		}
 	} while(end->siglaEstado == NULL || strcmp(end->siglaEstado,"")==0 || strcmp(end->siglaEstado," ")==0 || strlen(end->siglaEstado) > 3);
-         
+	
+	func->prox = NULL;
 }
 //CATEGORIAS
 void cadCategoria(Categoria *cat){
 	if(!cat){
 		printf("Voce deve informar primeiramente a quantidade de Categorias cadastradas!\n");
-		//Provocando uma saída do sistema caso a memória que precisemos não seja alocada.
+		//Provocando uma saÃ­da do sistema caso a memÃ³ria que precisemos nÃ£o seja alocada.
 		return;
 	}
 
@@ -270,7 +268,7 @@ void cadCategoria(Categoria *cat){
 void cadProduto(Produto *prod){
 	if(!prod){
 		printf("Voce deve informar primeiramente a quantidade de Produtos cadastrados!\n");
-		//Provocando uma saída do sistema caso a memória que precisemos não seja alocada.
+		//Provocando uma saÃ­da do sistema caso a memÃ³ria que precisemos nÃ£o seja alocada.
 		return;
 	}
 
@@ -333,7 +331,7 @@ void cadVendas(Venda *venda) {
 		gets(venda->CPF);
 		
 		if (venda->CPF == NULL || strcmp(venda->CPF, "") == 0) {
-			printf("Digite um CPF válido.\n");
+			printf("Digite um CPF vÃ¡lido.\n");
 		}
 	} while(venda->CPF == NULL || strcmp(venda->CPF, "") == 0);
 	
@@ -345,4 +343,42 @@ void cadVendas(Venda *venda) {
 			printf("Digite um valor maior que 0.\n");
 		}
 	} while(venda->valor <= 0);
+}
+
+void listarFuncionarios(Funcionario *listFunc) {
+     if (listFunc == NULL) {
+         printf("Nenhum funcionÃ¡rio cadastrado.");
+         return;
+     }
+     
+     Funcionario *aux;
+     aux = listFunc;
+     while (aux != NULL) {
+         printf("Nome: %s\nCPF: %d\nTelefone: %d\nRua: %s\nNÃºmero: %d\nBairro: %s\nCidade: %s\nEstado: %s\nCEP: %s\n",
+                       aux->nome, aux->CPF, aux->telefone, aux->endereco->rua, aux->endereco->numero, aux->endereco->bairro,
+                       aux->endereco->cidade, aux->endereco->siglaEstado, aux->endereco->CEP);
+         printf("\n===============================\n");
+         aux = aux->prox;
+     }
+}
+
+void listarCategorias(Categoria *listCat) {
+     if(listCat==NULL)
+     {
+        printf("Nenhuma Categoria cadastrada!\n");
+        //Provocando uma saÃ­da do sistema caso a memÃ³ria que precisemos nÃ£o seja alocada.
+        return;
+     }
+      Categoria *aux;
+	  aux = listCat; 
+	  system("cls");   
+	  printf("\n========= CATEGORIAS =========\n\n");      
+      while (aux != NULL){
+           printf("Codigo      : %d\n"\
+  		  	      "Nome        : %s\n"\
+				  "Total       : %d\n", aux->ID, aux->nome, aux->totalProd);                                
+           printf("\n=====================================\n");
+           aux = aux->prox;
+      } 
+
 }
