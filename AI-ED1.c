@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 typedef struct{
         int codigo;
@@ -10,11 +11,12 @@ typedef struct{
                 
 } Produto;
 
-typedef struct categoria{
+typedef struct {
         int ID;
         char nome[50];
-        int totalProd;       
-        
+        int totalProd;
+        double totalVendas;
+        Categoria *prox;
 } Categoria;
 
 typedef struct{
@@ -31,8 +33,9 @@ typedef struct{
         long int CPF;
         char nome[50];
         int telefone;
+        double totalVendas;
         Endereco endereco;
-		                
+		Funcionario *prox;
 } Funcionario;
 
 typedef struct{
@@ -43,12 +46,23 @@ typedef struct{
 				                
 } Venda;
 
+void inicia(Funcionario *listFunc, Categoria *listCat, Produto *listProd);
 //CADASTRO
 void cadFuncionario(Funcionario *func, Endereco *end);
 void cadCategoria(Categoria *cat);
 void cadProduto(Produto *prod);
 
 int main(void){
+    Funcionario *listFunc = (Funcionario *) malloc(sizeof(Funcionario));
+    Categoria *listCat = (Categoria *) malloc(sizeof(Categoria));
+    Produto *listProd = (Produto *) malloc(sizeof(Produto));
+    if(!listFunc || !listCat || !listProd) {
+		printf("Sem memoria disponivel!\n");
+		//Provocando uma saída do sistema caso a memória que precisemos não seja alocada.
+		exit(1);
+    }
+    
+    inicia(listFunc, listCat, listProd);
     
     int opcao;
     do{
@@ -119,6 +133,15 @@ int main(void){
 	
     system("pause");
     return EXIT_SUCCESS;    
+}
+
+void inicia(Funcionario *listFunc, Categoria *listCat, Produto *listProd) {
+	listFunc->prox = NULL;
+	listFunc->totalVendas = 0;
+	
+	listCat->prox = NULL;
+	listCat->totalProd = 0;
+	
 }
 
 //CADASTROS
@@ -298,3 +321,28 @@ void cadProduto(Produto *prod){
      printf("\n");
 }
 
+void cadVendas(Venda *venda) {
+	if (!venda) {
+		printf("Nenhuma venda informada!\n");
+		return;
+	}
+	
+	do {
+		printf("\nDigite o CPF: ");
+		fflush(stdin);
+		gets(venda->CPF);
+		
+		if (venda->CPF == NULL || strcmp(venda->CPF, "") == 0) {
+			printf("Digite um CPF válido.\n");
+		}
+	} while(venda->CPF == NULL || strcmp(venda->CPF, "") == 0);
+	
+	do {
+		printf("\nDigite o valor: ");
+		scanf("%d", venda->valor);
+		
+		if (venda->valor <= 0) {
+			printf("Digite um valor maior que 0.\n");
+		}
+	} while(venda->valor <= 0);
+}
