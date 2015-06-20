@@ -2,21 +2,21 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct{
+typedef struct produto{
         int codigo;
         char nome[50];
         double preco;
         int quantidade;
         int IDCategoria;
-                
+        produto *prox;
 } Produto;
 
-typedef struct {
+typedef struct categoria {
         int ID;
         char nome[50];
         int totalProd;
         double totalVendas;
-        Categoria *prox;
+        categoria *prox;
 } Categoria;
 
 typedef struct{
@@ -25,17 +25,16 @@ typedef struct{
         char bairro[50];
         char cidade[30];
         char siglaEstado[3];
-        long int CEP;
-		                
+        char CEP[11];
 } Endereco;
 
-typedef struct{
+typedef struct funcionario{
         long int CPF;
         char nome[50];
         int telefone;
         double totalVendas;
-        Endereco endereco;
-		Funcionario *prox;
+        Endereco *endereco;
+		funcionario *prox;
 } Funcionario;
 
 typedef struct{
@@ -43,7 +42,6 @@ typedef struct{
         long int CPF;
         double valor;
         int IDProduto;
-				                
 } Venda;
 
 void inicia(Funcionario *listFunc, Categoria *listCat, Produto *listProd);
@@ -51,14 +49,35 @@ void inicia(Funcionario *listFunc, Categoria *listCat, Produto *listProd);
 void cadFuncionario(Funcionario *func, Endereco *end);
 void cadCategoria(Categoria *cat);
 void cadProduto(Produto *prod);
+void inserirFuncionarioLista(Funcionario *listFunc, Funcionario *func);
+void inserirProdutoLista(Produto *listProd);
+void inserirCategoriaLista(Categoria *listCat);
+void inserirVendaLista(Venda *lisVend);
+
+// LISTAS
+void listarFuncionarios(Funcionario *listFunc);
+void listarCategorias(Categoria *listCat);
+
+// RELATÃ“RIOS
+double getMediaDeVenda(Funcionario *listFunc);
+Funcionario *getMelhorVendedor(Funcionario *listFunc);
+Categoria *getMelhorCategoria(Categoria *listCat);
+
+// LIBERAR MEMORIA
+void liberarMemoria(Funcionario *listFunc, Produto *listProd, Categoria *listCat);
+void liberaFuncionarios(Funcionario *listFunc);
+void liberaProdutos(Produto *listProd);
+void liberaCategorias(Categoria *listCat);
 
 int main(void){
     Funcionario *listFunc = (Funcionario *) malloc(sizeof(Funcionario));
     Categoria *listCat = (Categoria *) malloc(sizeof(Categoria));
     Produto *listProd = (Produto *) malloc(sizeof(Produto));
+    Venda *listVend = (Venda *) malloc(sizeof(Venda));
+    
     if(!listFunc || !listCat || !listProd) {
 		printf("Sem memoria disponivel!\n");
-		//Provocando uma saída do sistema caso a memória que precisemos não seja alocada.
+		//Provocando uma saÃ­da do sistema caso a memÃ³ria que precisemos nÃ£o seja alocada.
 		exit(1);
     }
     
@@ -83,7 +102,7 @@ int main(void){
         printf("14) Buscar produtos e total venda por funcionario.\n");
         printf("15) Funcionario com maior valor de venda.\n"); 
         printf("16) Categoria com mais venda.\n"); 
-        printf("17) Média das vendas.\n"); 
+        printf("17) MÃ©dia das vendas.\n"); 
         printf("0) Sair do programa.\n");   
         printf(" >"); 
         scanf("%d", &opcao);
@@ -145,11 +164,77 @@ void inicia(Funcionario *listFunc, Categoria *listCat, Produto *listProd) {
 }
 
 //CADASTROS
+void inserirFuncionarioLista(Funcionario *listFunc) {
+    Funcionario *novo = (Funcionario *) malloc(sizeof(Funcionario));
+	Endereco *novoEnd = (Endereco *) malloc(sizeof(Endereco));
+	
+    if (!novo || !novoEnd) {
+    	printf("\nMemÃ³ria insuficiente!\n");
+    	return;
+	}
+    
+    cadFuncionario(novo, novoEnd);
+    
+    if (listFunc->prox == NULL) {
+    	listFunc->prox = novo;
+    } else {
+        Funcionario *aux = listFunc->prox;
+        while (aux->prox != NULL) {
+        	aux = aux->prox;
+		}
+		
+		aux->prox = novo;
+    }
+}
+
+void inserirProdutoLista(Produto *listProd) {
+	Produto *novo = (Produto *) malloc(sizeof(Produto));
+	
+    if (!novo) {
+    	printf("\nMemÃ³ria insuficiente!\n");
+    	return;
+	}
+    
+    cadProduto(novo);
+    
+    if (listProd->prox == NULL) {
+    	listProd->prox = novo;
+    } else {
+        Produto *aux = listProd->prox;
+        while (aux->prox != NULL) {
+        	aux = aux->prox;
+		}
+		
+		aux->prox = novo;
+    }
+}
+
+void inserirCategoriaLista(Categoria *listCat) {
+	Categoria *novo = (Categoria *) malloc(sizeof(Categoria));
+    if (!novo) {
+    	printf("\nMemÃ³ria insuficiente!\n");
+    	return;
+	}
+    
+    cadCategoria(novo);
+    
+    if (listCat->prox == NULL) {
+    	listCat->prox = novo;
+    } else {
+        Categoria *aux = listCat->prox;
+        while (aux->prox != NULL) {
+        	aux = aux->prox;
+		}
+		
+		aux->prox = novo;
+    }
+}
+
 //FUNCIONARIOS
 void cadFuncionario(Funcionario *func, Endereco *end){
 	if(!func){
 		printf("Voce deve informar primeiramente a quantidade de Funcionarios cadastrados!\n");
-		//Provocando uma saída do sistema caso a memória que precisemos não seja alocada.
+		//Provocando uma saÃ­da do sistema caso a memÃ³ria que precisemos nÃ£o seja alocada.
 		return;
 	}
 
@@ -192,7 +277,7 @@ void cadFuncionario(Funcionario *func, Endereco *end){
 			printf("Nome da rua nao pode ser vazio.\n");                  
 		}
 		if(strlen(end->rua) > 50){
-			printf("Máximo de 20 caracteres.\n");
+			printf("MÃ¡ximo de 20 caracteres.\n");
 		}
 	} while(end->rua == NULL || strcmp(end->rua,"")==0 || strcmp(end->rua," ")==0 || strlen(end->rua) > 50);
 	
@@ -201,7 +286,7 @@ void cadFuncionario(Funcionario *func, Endereco *end){
 		scanf("%d", &end->numero);
 		
 		if(end->numero < 1){
-			printf("O número precisa ser maior que 0.\n");               
+			printf("O nÃºmero precisa ser maior que 0.\n");               
 		}
 	} while(end->numero < 1);
 	
@@ -214,7 +299,7 @@ void cadFuncionario(Funcionario *func, Endereco *end){
 			printf("Nome do bairro nao pode ser vazio.\n");                  
 		}
 		if(strlen(end->bairro) > 20){
-			printf("Máximo de 20 caracteres.\n");
+			printf("MÃ¡ximo de 20 caracteres.\n");
 		}
 	} while(end->bairro == NULL || strcmp(end->bairro,"")==0 || strcmp(end->bairro," ")==0 || strlen(end->bairro) > 20);
 	
@@ -227,7 +312,7 @@ void cadFuncionario(Funcionario *func, Endereco *end){
 			printf("Nome da cidade nao pode ser vazio.\n");                  
 		}
 		if(strlen(end->cidade) > 30){
-			printf("Máximo de 30 caracteres.\n");
+			printf("MÃ¡ximo de 30 caracteres.\n");
 		}
 	} while(end->cidade == NULL || strcmp(end->cidade,"")==0 || strcmp(end->cidade," ")==0 || strlen(end->cidade) > 30);
 	
@@ -240,16 +325,17 @@ void cadFuncionario(Funcionario *func, Endereco *end){
 			printf("Sigla nao pode ser vazia.\n");                  
 		}
 		if(strlen(end->siglaEstado) > 3){
-			printf("Máximo de 3 caracteres.\n");
+			printf("MÃ¡ximo de 3 caracteres.\n");
 		}
 	} while(end->siglaEstado == NULL || strcmp(end->siglaEstado,"")==0 || strcmp(end->siglaEstado," ")==0 || strlen(end->siglaEstado) > 3);
-         
+	
+	func->prox = NULL;
 }
 //CATEGORIAS
 void cadCategoria(Categoria *cat){
 	if(!cat){
 		printf("Voce deve informar primeiramente a quantidade de Categorias cadastradas!\n");
-		//Provocando uma saída do sistema caso a memória que precisemos não seja alocada.
+		//Provocando uma saÃ­da do sistema caso a memÃ³ria que precisemos nÃ£o seja alocada.
 		return;
 	}
 
@@ -270,7 +356,7 @@ void cadCategoria(Categoria *cat){
 void cadProduto(Produto *prod){
 	if(!prod){
 		printf("Voce deve informar primeiramente a quantidade de Produtos cadastrados!\n");
-		//Provocando uma saída do sistema caso a memória que precisemos não seja alocada.
+		//Provocando uma saÃ­da do sistema caso a memÃ³ria que precisemos nÃ£o seja alocada.
 		return;
 	}
 
@@ -333,7 +419,7 @@ void cadVendas(Venda *venda) {
 		gets(venda->CPF);
 		
 		if (venda->CPF == NULL || strcmp(venda->CPF, "") == 0) {
-			printf("Digite um CPF válido.\n");
+			printf("Digite um CPF vÃ¡lido.\n");
 		}
 	} while(venda->CPF == NULL || strcmp(venda->CPF, "") == 0);
 	
@@ -345,4 +431,128 @@ void cadVendas(Venda *venda) {
 			printf("Digite um valor maior que 0.\n");
 		}
 	} while(venda->valor <= 0);
+}
+
+void listarFuncionarios(Funcionario *listFunc) {
+     if (listFunc == NULL) {
+         printf("Nenhum funcionÃ¡rio cadastrado.");
+         return;
+     }
+     
+     Funcionario *aux;
+     aux = listFunc->prox;
+     while (aux != NULL) {
+         printf("Nome: %s\nCPF: %d\nTelefone: %d\nRua: %s\nNÃºmero: %d\nBairro: %s\nCidade: %s\nEstado: %s\nCEP: %s\n",
+                       aux->nome, aux->CPF, aux->telefone, aux->endereco->rua, aux->endereco->numero, aux->endereco->bairro,
+                       aux->endereco->cidade, aux->endereco->siglaEstado, aux->endereco->CEP);
+         printf("\n===============================\n");
+         aux = aux->prox;
+     }
+}
+
+void listarCategorias(Categoria *listCat) {
+     if(listCat==NULL)
+     {
+        printf("Nenhuma Categoria cadastrada!\n");
+        //Provocando uma saÃ­da do sistema caso a memÃ³ria que precisemos nÃ£o seja alocada.
+        return;
+     }
+      Categoria *aux;
+	  aux = listCat->prox; 
+	  system("cls");   
+	  printf("\n========= CATEGORIAS =========\n\n");      
+      while (aux != NULL){
+           printf("Codigo      : %d\n"\
+  		  	      "Nome        : %s\n"\
+				  "Total       : %d\n", aux->ID, aux->nome, aux->totalProd);                                
+           printf("\n=====================================\n");
+           aux = aux->prox;
+      } 
+
+}
+
+double getMediaDeVenda(Funcionario *listFunc) {
+	double totalVendas = 0;
+	int cont = 0;
+	
+	if (listFunc->prox != NULL) {
+		Funcionario *aux = listFunc->prox;
+		while (aux != NULL) {
+			totalVendas += aux->totalVendas;
+			cont++;
+		}
+		return (totalVendas / cont);
+	}
+	return 0;
+}
+
+Funcionario *getMelhorVendedor(Funcionario *listFunc) {
+	double maior = 0;
+	Funcionario *melhorVendedor = NULL;
+	if (listFunc->prox != NULL) {
+		Funcionario *aux = listFunc->prox;
+		while (aux != NULL) {
+			if (aux->totalVendas > maior) {
+				melhorVendedor = aux;
+				maior = aux->totalVendas;
+			}
+		}
+	}
+	return melhorVendedor;
+}
+
+Categoria *getMelhorCategoria(Categoria *listCat) {
+	double maior = 0;
+	Categoria *melhorCategoria = NULL;
+	if (listCat->prox != NULL) {
+		Categoria *aux = listCat->prox;
+		while (aux != NULL) {
+			if (aux->totalVendas > maior) {
+				melhorCategoria = aux;
+				maior = aux->totalVendas;
+			}
+		}
+	}
+	return melhorCategoria;
+}
+
+void liberarMemoria(Funcionario *listFunc, Produto *listProd, Categoria *listCat) {
+	liberaFuncionarios(listFunc);
+	liberaProdutos(listProd);
+	liberaCategorias(listCat);
+	
+	free(listFunc);
+	free(listProd);
+	free(listCat);
+}
+
+void liberaFuncionarios(Funcionario *listFunc) {
+	Funcionario *atual, *proximo;
+	atual = listFunc->prox;
+	while (atual != NULL) {
+		proximo = atual->prox;
+		atual = proximo;
+		free(atual->endereco);
+		free(atual);
+	}
+}
+
+void liberaProdutos(Produto *listProd) {
+	Produto *atual, *proximo;
+	atual = listProd->prox;
+	while (atual != NULL) {
+		proximo = atual->prox;
+		atual = proximo;
+		free(atual);
+	}
+}
+
+void liberaCategorias(Categoria *listCat) {
+	Categoria *atual, *proximo;
+	atual = listCat->prox;
+	while (atual != NULL) {
+		proximo = atual->prox;
+		atual = proximo;
+		free(atual);
+	}
 }
